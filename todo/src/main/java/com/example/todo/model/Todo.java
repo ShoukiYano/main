@@ -9,10 +9,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+//コンストラクタ、ゲッター、セッター
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor // Lombokによるデフォルトコンストラクタの自動生成
 @Entity
+
+/**
+ * 
+ * @param id エンティティの主キーとして指定し、データベースによって自動生成されることを指示
+ * @param GeneratedValue 
+ * @param NotBlank name nameが空白、この制約に違反した場合は指定されたメッセージが表示
+ * @param NotBlank content contentが空白、この制約に違反した場合は指定されたメッセージが表示
+ *
+ */
 public class Todo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,35 +33,4 @@ public class Todo {
 	
 	@NotBlank(message = "内容は必須です。")
 	private String content;
-	
-	// コンストラクタ、ゲッター、セッター
-	public Todo(Long id, String name, String content) {
-		this.id = id;
-		this.name = name;
-		this.content = content;
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getContent() {
-		return content;
-	}
-	
-	public void setContent(String content) {
-		this.content = content;
-	}
 }

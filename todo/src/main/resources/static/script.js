@@ -1,40 +1,63 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-	fetchTodos();
+	// URLからクエリパラメータを取得する関数が必要です
+	const todoId = getQueryParam('id');
+	if (!todoId) {
+		fetchTodos(); // ここでリストをフェッチして表示する関数を呼び出す
+	}
 });
 
 const fetchTodos = () => {
-	fetch('/api/todos')
+	fetch(`/api/todos`)
 		.then(response => response.json())
 		.then(data => {
 			const todoList = document.getElementById('todo-list');
 			todoList.innerHTML = '' // Clear the list.
 			data.forEach(todo => {
-				const todoItem = document.createElement('li');
-				todoItem.textContent = `${todo.name}:${todo.content}`;
+				const todoItem = document.createElement('div');
+				todoItem.classList.add('todo-item'); // CSSクラスを追加
+
+				const todoText = document.createElement('div');
+				todoText.classList.add('todo-text');
+				todoText.textContent = `名前: ${todo.name}`; // テキスト部分の内容を設定
+
+				const buttonsContainer = document.createElement('div');
+				buttonsContainer.classList.add('buttons');
 				const detailButton = createButton('詳細', () => showDetails(todo.id)),
-					editButton = createButton('編集', () => editTodo(todo.id)),
+					editButton = createButton('編集', () => handleEditButtonClick(todo.id), todo.id),
 					deleteButton = createButton('削除', () => deleteTodo(todo.id));
-				todoItem.appendChild(detailButton);
-				todoItem.appendChild(editButton);
-				todoItem.appendChild(deleteButton);
+
+				// ボタンをコンテナに追加
+				buttonsContainer.appendChild(detailButton);
+				buttonsContainer.appendChild(editButton);
+				buttonsContainer.appendChild(deleteButton);
+
+				// テキストとボタンコンテナをtodoItemに追加
+				todoItem.appendChild(todoText);
+				todoItem.appendChild(buttonsContainer);
 				todoList.appendChild(todoItem);
 			});
 
 		});
 }
 
+// URLからクエリパラメータを取得する関数
+function getQueryParam(param) {
+	const urlParams = new URLSearchParams(window.location.search);
+	return urlParams.get(param);
+}
+
 const addTodo = () => {
 	const nameInput = document.getElementById('name'),
 		contentInput = document.getElementById('content');
-		if(nameInput.value.trim() === '' && contentInput.value.trim() === '') {
-			alert('名前と内容は必須です。');
-		}else if (nameInput.value.trim() === '') {
-			alert('名前は必須です。');
-			return; // 早期リターン
-		}else if (contentInput.value.trim() === '') {
-			alert('内容は必須です。')
-		}
+	if (nameInput.value.trim() === '' && contentInput.value.trim() === '') {
+		alert('名前と内容は必須です。');
+	} else if (nameInput.value.trim() === '') {
+		alert('名前は必須です。');
+		return; // 早期リターン
+	} else if (contentInput.value.trim() === '') {
+		alert('内容は必須です。')
+	}
 	fetch('/api/todos', {
 		method: 'POST',
 		headers: {
@@ -57,31 +80,31 @@ const addTodo = () => {
  * @param id ID List
  */
 const showDetails = (id) => {
-	fetch(`/api/todos/${id}`)
-		.then(response => response.json())
-		.then(data => {
-			alert(`名前：${data.name}\n内容：${data.content}`);
-		});
+	window.location.href = `/todo-details.html?id=${id}`; // 詳細ページにクエリパラメータ付きでリダイレクト
 }
 
-const editTodo = (id) => {
-	const newName = prompt('新しい名前を入力してください'),
-		newContent = prompt('新しい内容を入力してください');
-	fetch(`/api/todos/${id}`, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: JSON.stringify({
-			name: newName,
-			content: newContent
-		}),
-	})
-		.then(response => response.json())
-		.then(data => {
-			fetchTodos(); // Refresh the list.
-		});
+const createButton = (text, onClick, todoId) => {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.onclick = onClick;
+    button.setAttribute('data-todo-id', todoId); // これが必要です
+    button.classList.add('edit-button'); // 編集ボタンにこのクラスを追加
+    return button;
+};
+
+
+// 編集ボタンのクリックイベントを処理する関数
+function handleEditButtonClick(todoId) {
+    // 編集ページへのパスはプロジェクトのURL構造によります
+    const editPageUrl = `/edit-todo.html?id=${todoId}`;
+    window.location.href = editPageUrl; // 編集ページへ遷移
 }
+
+// 編集ボタンのイベントリスナーを設定する
+document.querySelectorAll('.edit-button').forEach(button => {
+    const todoId = button.getAttribute('data-todo-id'); // ボタンからTodoのIDを取得
+    button.addEventListener('click', () => handleEditButtonClick(todoId));
+});
 
 const deleteTodo = (id) => {
 	fetch(`api/todos/${id}`, {
@@ -92,9 +115,4 @@ const deleteTodo = (id) => {
 		})
 }
 
-const createButton = (text, onClick) => {
-	const button = document.createElement('button');
-	button.textContent = text;
-	button.onclick = onClick;
-	return button;
-}
+

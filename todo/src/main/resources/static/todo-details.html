@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo 詳細ページ</title>
+<style>
+  /* 必要に応じてスタイルを追加してください */
+  .todo-details-container {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }
+  
+  #back-button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#back-button:hover {
+    background-color: #e2e6ea;
+}
+
+.content {
+  white-space: pre-wrap; /* 改行、空白、タブを保持し、必要に応じて折り返す */
+}
+</style>
+</head>
+<body>
+
+<div class="todo-details-container">
+  <h1>Todo 詳細</h1>
+  <div><strong>ID:</strong> <span id="todo-id"></span></div>
+  <div><strong>名前:</strong> <span id="todo-name"></span></div>
+  <div><strong>【内容】</strong></div>
+  <div id="todo-content" class="content"></div>
+  <!-- 戻るボタン -->
+  <button id="back-button">戻る</button>
+  <!-- 他の詳細情報もここに追加することができます -->
+</div>
+
+<script>
+// JavaScriptコード
+// URLからクエリパラメータを取得する関数
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
+
+// ページがロードされたときに実行
+document.addEventListener('DOMContentLoaded', function() {
+    const todoId = getQueryParam('id'); // URLからidを取得
+    if (todoId) {
+        fetch(`/api/todos/${todoId}`) // APIから該当するTodoの詳細を取得
+            .then(response => response.json())
+            .then(todo => {
+                // 取得したデータを各HTML要素に設定
+                document.getElementById('todo-id').textContent = todo.id;
+                document.getElementById('todo-name').textContent = todo.name;
+                document.getElementById('todo-content').textContent = todo.content;
+            })
+            .catch(error => {
+                console.error('Error fetching todo details:', error);
+                // エラーハンドリングをここで行う
+            });
+    }
+});
+
+document.getElementById('back-button').addEventListener('click',() => {
+	window.history.back(); // ブラウザの履歴を使って1つ前のページに戻る
+})
+</script>
+
+</body>
+</html>

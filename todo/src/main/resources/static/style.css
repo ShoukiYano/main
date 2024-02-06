@@ -4,6 +4,19 @@ body {
 	font-family: Arial, sans-serif;
 }
 
+.todo-item {
+    display: flex;
+    justify-content: space-between; /* テキストとボタンを両端に配置 */
+    align-items: center; /* 垂直方向の中央に配置 */
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px; /* アイテム間にマージンを設定 */
+}
+
+.todo-content {
+    flex-grow: 1; /* 内容を可能な限りのスペースに拡張 */
+}
+
 #todo-app {
 	width: 600px;
 	margin: auto;
@@ -25,4 +38,54 @@ body {
 
 #todo-list li button {
 	margin-left: 10px;
+}
+
+.todo-text {
+    flex-grow: 1; /* テキストが余白を埋めるように設定 */
+    margin-right: 20px; /* ボタンとの間にマージンを設定 */
+}
+
+.buttons {
+    /* ボタンを格納するためのコンテナに適用するスタイル */
+    display: flex; /* ボタンを横に並べる */
+}
+
+button {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    margin-left: 10px;
+    color: white;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#content {
+  width: 100%;       /* テキストエリアの幅をコンテナに合わせて100%に設定 */
+  height: 150px;     /* 高さを固定値に設定 */
+  resize: none;      /* サイズ変更を無効にする */
+  box-sizing: border-box; /* パディングとボーダーが幅に含まれるようにする */
+  margin-bottom: 10px; /* 余白を設定 */
+}
+
+#completeBtn {
+	background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    margin-left: 10px;
+    color: white;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+#completeBtn:hover {
+	background-color: #0056b3;
 }
