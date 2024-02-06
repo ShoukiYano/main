@@ -97,8 +97,38 @@ const createButton = (text, onClick, todoId) => {
 function handleEditButtonClick(todoId) {
     // 編集ページへのパスはプロジェクトのURL構造によります
     const editPageUrl = `/edit-todo.html?id=${todoId}`;
-    window.location.href = editPageUrl; // 編集ページへ遷移
+    checkUserPermission(todoId)
+    .then(isAllowed => {
+		if (isAllowed) {
+			window.location.href = editPageUrl; // 編集ページへ遷移
+		}else {
+			alert('編集する権限がありません');
+		}
+	})
+	.catch(error => {
+		console.error('Error checking permissions:',error);
+	});
+    
 }
+
+const checkUserPermission = (todoId) => {
+	return fetch(`/api/check-permission?todoId=${todoId}`, {
+		method: 'GET',
+		headers: {
+			'Authorization': 'Bearer ' + userToken
+		}
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Permission check failed');
+		}
+		return response.json();
+	})
+	.then(data => {
+		return data.isAllowed;
+	})
+}
+
 
 // 編集ボタンのイベントリスナーを設定する
 document.querySelectorAll('.edit-button').forEach(button => {
